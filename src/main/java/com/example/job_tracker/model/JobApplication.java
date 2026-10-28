@@ -1,24 +1,45 @@
 package com.example.job_tracker.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDate;
 
 @Entity
 public class JobApplication {
     @Id
             @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank(message = "company name required")
     private String company;
-    private String role;
-    private String status;
 
-    public String getStatus() {
+    @NotBlank(message = "role is required")
+    private String role;
+
+
+    @NotNull(message = "status is required")
+    @Enumerated(EnumType.STRING)
+    private ApplicationStatus status;
+
+    @NotNull(message = "date is required")
+    private LocalDate dateApplied;
+
+    public LocalDate getDateApplied() {
+        return dateApplied;
+    }
+
+    public void setDateApplied(LocalDate dateApplied) {
+        this.dateApplied = dateApplied;
+    }
+
+
+
+    public ApplicationStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ApplicationStatus status) {
         this.status = status;
     }
 

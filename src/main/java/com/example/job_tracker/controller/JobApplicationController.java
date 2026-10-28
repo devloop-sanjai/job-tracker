@@ -2,6 +2,7 @@ package com.example.job_tracker.controller;
 
 import com.example.job_tracker.model.JobApplication;
 import com.example.job_tracker.repository.JobApplicationRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public JobApplicationController(JobApplicationRepository repository){
 
 
     @PostMapping
-    public JobApplication create(@RequestBody JobApplication application) {
+    public JobApplication create(@Valid @RequestBody JobApplication application) {
         return repository.save(application);
     }
 
@@ -39,7 +40,7 @@ public JobApplicationController(JobApplicationRepository repository){
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete( @PathVariable Long id) {
         if (!repository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
@@ -48,7 +49,7 @@ public JobApplicationController(JobApplicationRepository repository){
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JobApplication> update(@PathVariable Long id,
+    public ResponseEntity<JobApplication> update(@Valid @PathVariable Long id,
                                                  @RequestBody JobApplication updated) {
         Optional<JobApplication> found = repository.findById(id);
         if (found.isEmpty()) {
@@ -58,6 +59,7 @@ public JobApplicationController(JobApplicationRepository repository){
         existing.setCompany(updated.getCompany());
         existing.setRole(updated.getRole());
         existing.setStatus(updated.getStatus());
+        existing.setDateApplied(updated.getDateApplied());
         return ResponseEntity.ok(repository.save(existing));
     }
 
