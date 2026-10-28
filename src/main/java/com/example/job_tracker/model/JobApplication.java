@@ -9,8 +9,10 @@ import jakarta.persistence.Id;
 public class JobApplication {
     @Id
             @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    String company;
+    private Long id;
+    private String company;
+    private String role;
+    private String status;
 
     public String getStatus() {
         return status;
@@ -44,6 +46,5 @@ public class JobApplication {
         this.id = id;
     }
 
-    String role;
-    String status;
+
 }
