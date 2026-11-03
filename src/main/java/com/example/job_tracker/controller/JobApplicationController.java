@@ -1,8 +1,10 @@
 package com.example.job_tracker.controller;
 
+import com.example.job_tracker.exception.ApplicationNotFoundException;
 import com.example.job_tracker.model.JobApplication;
 import com.example.job_tracker.repository.JobApplicationRepository;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,36 +33,30 @@ public JobApplicationController(JobApplicationRepository repository){
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<JobApplication> getById(@PathVariable Long id) {
-        Optional<JobApplication> found = repository.findById(id);
-        if (found.isPresent()) {
-            return ResponseEntity.ok(found.get());
-        }
-        return ResponseEntity.notFound().build();
+    public JobApplication getById(@PathVariable Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ApplicationNotFoundException(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete( @PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
         if (!repository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+            throw new ApplicationNotFoundException(id);
         }
         repository.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JobApplication> update(@Valid @PathVariable Long id,
-                                                 @RequestBody JobApplication updated) {
-        Optional<JobApplication> found = repository.findById(id);
-        if (found.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        JobApplication existing = found.get();
+    public JobApplication update(@PathVariable Long id,
+                                 @Valid @RequestBody JobApplication updated) {
+        JobApplication existing = repository.findById(id)
+                .orElseThrow(() -> new ApplicationNotFoundException(id));
         existing.setCompany(updated.getCompany());
         existing.setRole(updated.getRole());
         existing.setStatus(updated.getStatus());
         existing.setDateApplied(updated.getDateApplied());
-        return ResponseEntity.ok(repository.save(existing));
+        return repository.save(existing);
     }
 
 }
